@@ -16,6 +16,7 @@ const val MB = 1024 * 1024
 
 
 enum class Generator {
+    TEST,
     LCG,
     MERSENNE,
     ISAAC,
@@ -34,6 +35,7 @@ object PseudoRandomGeneratorFactory {
         seed: String = DEFAULT_SEED,
         sizeMB: Int = DEFAULT_SIZE_MB
     ): PseudoRandomGenerator = when (type) {
+        Generator.TEST -> TestGenerator()
         Generator.LCG -> LCG()
         Generator.MERSENNE -> Mersenne()
         Generator.ISAAC -> ISAAC()
