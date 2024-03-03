@@ -1,6 +1,4 @@
-import genarator.Generator
-import genarator.MB
-import genarator.SUFFIX
+import genarator.*
 import kotlinx.coroutines.*
 import statistic.Ergodicity
 import java.io.File
@@ -9,26 +7,20 @@ import kotlin.system.measureTimeMillis
 
 
 fun main() {
-//    PseudoRandomGeneratorFactory.buildGenerators()
-//        .forEach { gen ->
-//            gen.writeToFile()
-//        }
+
+    // Generates pseudo random sequences within each Generator and writes them to files
+    // By default it will generate 4GB files for by each Generator
+    PseudoRandomGeneratorFactory.buildGenerators(DEFAULT_SEED, DEFAULT_SIZE_MB)
+        .forEach { gen ->
+            gen.writeToFile()
+        }
 
     val pool = Executors.newFixedThreadPool(Generator.entries.size)
-//    val futures = Generator.entries.map {
-//        pool.submit(Callable { calculateErgodicity(it) })
-//    }
-//    while (futures.any { !it.isDone })
-//    futures.forEach { it.get().let {
-//        println("AVG Period for ${it.first.name}: ${it.second} bytes.")
-//    } }
-//    pool.shutdown()
-
     val dispatcher = pool.asCoroutineDispatcher()
     val coroutines = runBlocking {
         Generator.entries
             .map { type ->
-                async(dispatcher) {
+               async(dispatcher) {
                     calculateErgodicity(type)
                 }
             }
@@ -37,14 +29,21 @@ fun main() {
     runBlocking {
         coroutines.awaitAll()
     }.forEach {
-        println("AVG Period for ${it.first.name}: ${it.second} bytes.")
+        val erg = it.second
+        println()
+        println("*********************************************")
+        println("Results for <${it.first.name}> generator:")
+        println("AVG erg. Period: ${erg.getAvgPeriod()} bytes.")
+        println("MIN erg. Period: ${erg.minPeriod} bytes.")
+        println("MAX erg. Period: ${erg.maxPeriod} bytes.")
+        println("*********************************************")
+        println()
     }
 
     pool.shutdown()
 }
 
-
-suspend fun calculateErgodicity(type: Generator): Pair<Generator, Long> {
+suspend fun calculateErgodicity(type: Generator): Pair<Generator, Ergodicity> {
     println("${type.name} calculations started...")
     val file = File(type.name + SUFFIX)
     val iStream = file.inputStream()
@@ -62,8 +61,5 @@ suspend fun calculateErgodicity(type: Generator): Pair<Generator, Long> {
 
 
     iStream.close()
-
-
-    val avg = erg.getPeriods().average().toLong()
-    return type to avg
+    return type to erg
 }

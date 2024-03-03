@@ -10,7 +10,7 @@ const val DEFAULT_SEED =
             "На встречу северной авроры, " +
             "Звездою севера, явись!"
 
-const val DEFAULT_SIZE_MB = 1024
+const val DEFAULT_SIZE_MB = 4096
 const val SUFFIX = ".txt"
 const val MB = 1024 * 1024
 
