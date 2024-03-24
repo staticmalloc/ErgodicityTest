@@ -22,7 +22,9 @@ enum class Generator {
     MERSENNE,
     ISAAC,
     WELL1024A,
-    WELL44497B
+    WELL44497B,
+    SHA1,
+    DRBG
 }
 
 
@@ -42,6 +44,8 @@ object PseudoRandomGeneratorFactory {
         Generator.ISAAC -> ISAAC()
         Generator.WELL1024A -> WELL1024A()
         Generator.WELL44497B -> WELL44497B()
+        Generator.SHA1 -> SHA1()
+        Generator.DRBG -> DRBG()
     }
         .setSeed(seed)
         .setSize(sizeMB)
@@ -50,7 +54,6 @@ object PseudoRandomGeneratorFactory {
 
 sealed class PseudoRandomGenerator(
     val type: Generator,
-    protected var seed: String = "",
     private var sizeMB: Int = DEFAULT_SIZE_MB
 ) {
 
@@ -59,10 +62,7 @@ sealed class PseudoRandomGenerator(
         return this
     }
 
-    fun setSeed(seed: String): PseudoRandomGenerator {
-        this.seed = seed
-        return this
-    }
+    abstract fun setSeed(seed: String): PseudoRandomGenerator
 
     abstract fun generateMB(): ByteArray
 

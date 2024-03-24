@@ -1,7 +1,4 @@
-import genarator.Generator
-import genarator.MB
-import genarator.RANDOM_SEQUENCE_PATH
-import genarator.SUFFIX
+import genarator.*
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -17,15 +14,20 @@ fun main() {
 
     // Generates pseudo random sequences within each Generator and writes them to files
     // By default it will generate 1GB files for by each Generator
-//    PseudoRandomGeneratorFactory.buildGenerators(DEFAULT_SEED, DEFAULT_SIZE_MB)
-//        .forEach { gen ->
-//            gen.writeToFile()
-//        }
+
+    val currentGenTypes = //listOf(Generator.SHA1, Generator.DRBG) // specified
+        Generator.entries // - all
+
+    currentGenTypes
+        .map { PseudoRandomGeneratorFactory.buildGenerator(it, DEFAULT_SEED, DEFAULT_SIZE_MB) }
+        .forEach { gen ->
+            gen.writeToFile()
+        }
 
     val pool = Executors.newFixedThreadPool(Generator.entries.size)
     val dispatcher = pool.asCoroutineDispatcher()
     val coroutines = runBlocking {
-        Generator.entries
+        currentGenTypes
             .map { type ->
                 async(dispatcher) {
                     calculateStatistics(type)

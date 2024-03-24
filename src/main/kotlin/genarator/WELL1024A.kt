@@ -9,6 +9,11 @@ class WELL1024A: PseudoRandomGenerator(Generator.WELL1024A) {
         generator.setSeed(DEFAULT_SEED.hashCode())
     }
 
+    override fun setSeed(seed: String): PseudoRandomGenerator {
+        generator.setSeed(seed.hashCode())
+        return this
+    }
+
     override fun generateMB(): ByteArray {
         val array = ByteArray(MB)
         generator.nextBytes(array)

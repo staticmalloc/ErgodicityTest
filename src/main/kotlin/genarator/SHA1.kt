@@ -1,19 +1,18 @@
 package genarator
 
-import org.apache.commons.math3.random.ISAACRandom
+import java.security.SecureRandom
 
-class ISAAC: PseudoRandomGenerator(Generator.ISAAC) {
-    private val generator = ISAACRandom()
+class SHA1: PseudoRandomGenerator(Generator.SHA1) {
+
+    private val generator = SecureRandom.getInstance("SHA1PRNG")
 
     override fun setSeed(seed: String): PseudoRandomGenerator {
-        generator.setSeed(seed.hashCode())
+        generator.setSeed(seed.hashCode().toLong())
         return this
     }
-
     override fun generateMB(): ByteArray {
         val array = ByteArray(MB)
         generator.nextBytes(array)
         return array
     }
-
 }
