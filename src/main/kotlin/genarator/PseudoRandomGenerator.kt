@@ -10,7 +10,8 @@ const val DEFAULT_SEED =
             "На встречу северной авроры, " +
             "Звездою севера, явись!"
 
-const val DEFAULT_SIZE_MB = 4096
+const val DEFAULT_SIZE_MB = 1024
+const val RANDOM_SEQUENCE_PATH = "sequences/"
 const val SUFFIX = ".txt"
 const val MB = 1024 * 1024
 
@@ -66,7 +67,7 @@ sealed class PseudoRandomGenerator(
     abstract fun generateMB(): ByteArray
 
     fun writeToFile(): File {
-        val file = File(type.name + SUFFIX)
+        val file = File(RANDOM_SEQUENCE_PATH + type.name + SUFFIX)
         file.writeBytes(byteArrayOf())
         for (i in 0..<sizeMB)
             file.appendBytes(generateMB())
